@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Currency } from '@/api/responses/CurrencyResponse'
+import type { AvailableCurrencies } from '@/api/responses/CurrencyResponse'
 import { ref } from 'vue'
 
 defineProps<{
-  dropdownOptions: Currency[]
+  dropdownOptions: AvailableCurrencies
 }>()
 
 const selectedOption = ref<string | null>(null)
@@ -17,9 +17,8 @@ const onSelect = (event: Event) => {
 <template>
   <div class="select-dropdown">
     <select @change="onSelect" v-model="selectedOption">
-      <option value="" disabled>Select a Currency</option>
-      <option v-for="option in dropdownOptions" :key="option.code" :value="option.code">
-        {{ option.name }}
+      <option v-for="option in dropdownOptions" :key="option" :value="option">
+        {{ option }}
       </option>
     </select>
   </div>

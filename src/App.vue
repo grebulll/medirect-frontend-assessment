@@ -1,39 +1,46 @@
 <script setup lang="ts">
-import type { Currency } from './api/responses/CurrencyResponse'
+import { fetchLiveCurrencies, fetchTimeseries } from './api/price'
+import type { CurrencyResponse } from './api/responses/CurrencyResponse'
 import CurrencyDropdown from './components/molecules/CurrencyDropdown.vue'
+import ForexChart from './components/organisms/ForexChart.vue'
 
 // const { data: liveCurrencies } = fetchLiveCurrencies()
+// const { data: timeSeries } = fetchTimeseries()
 
-const options: Currency[] = [
-  { code: 'EUR', name: 'Euro' },
-  { code: 'GBP', name: 'British Pound Sterling' },
-]
+const options: CurrencyResponse = {
+  available_currencies: {
+    ARS: 'Argentine Peso',
+    AUD: 'Australian Dollar',
+    BHD: 'Bahraini Dinar',
+    BRL: 'Brazilian Real',
+    CAD: 'Canadian Dollar',
+    CHF: 'Swiss Franc',
+    CLP: 'Chilean Peso',
+    CNY: 'Chinese Yuan',
+    COP: 'Colombian Peso',
+  },
+  endpoint: 'live_currencies',
+}
 </script>
 
 <template>
-  <CurrencyDropdown :dropdownOptions="options" />
+  <div class="container">
+    <h1>Forex Exchange</h1>
+    <h3>Check out the current price for a currency pair</h3>
+    <CurrencyDropdown :dropdownOptions="options.available_currencies" />
+    <CurrencyDropdown :dropdownOptions="options.available_currencies" />
+    <CurrencyDropdown :dropdownOptions="options.available_currencies" />
+    <ForexChart />
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.container {
+  display: flex;
+  flex-direction: column;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+h1 {
+  font-weight: 700;
 }
 </style>
