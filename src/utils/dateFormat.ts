@@ -1,44 +1,32 @@
-export const formatDate = (date: Date) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  return `${year}-${month}-${day}-${hours}:${minutes}`
-}
+export const formatDate = (date: Date) => date.toISOString().replace('T', '-').slice(0, 16)
 
-export const decreaseFifteenMinutes = () => {
+export const decreaseTime = (
+  unit: 'minutes' | 'hours' | 'days' | 'weeks' | 'months',
+  amount: number = 1,
+) => {
   const newDate = new Date()
-  newDate.setMinutes(newDate.getMinutes() - 15)
+  switch (unit) {
+    case 'minutes':
+      newDate.setMinutes(newDate.getMinutes() - amount)
+      break
+    case 'hours':
+      newDate.setHours(newDate.getHours() - amount)
+      break
+    case 'days':
+      newDate.setDate(newDate.getDate() - amount)
+      break
+    case 'weeks':
+      newDate.setDate(newDate.getDate() - amount * 7)
+      break
+    case 'months':
+      newDate.setMonth(newDate.getMonth() - amount)
+      break
+  }
   return formatDate(newDate)
 }
 
-export const decreaseHour = () => {
-  const newDate = new Date()
-  newDate.setHours(newDate.getHours() - 1)
-  return formatDate(newDate)
-}
-
-export const decreaseDay = () => {
-  const newDate = new Date()
-  newDate.setDate(newDate.getDate() - 1)
-  return formatDate(newDate)
-}
-
-export const decreaseWeek = () => {
-  const newDate = new Date()
-  newDate.setDate(newDate.getDate() - 7)
-  return formatDate(newDate)
-}
-
-export const decreaseMonth = () => {
-  const newDate = new Date()
-  newDate.setMonth(newDate.getMonth() - 1)
-  return formatDate(newDate)
-}
-
-export const decreaseOneMinute = (date: Date) => {
-  const newDate = new Date(date)
-  newDate.setMinutes(newDate.getMinutes() - 1)
-  return newDate
-}
+export const decreaseFifteenMinutes = () => decreaseTime('minutes', 15)
+export const decreaseHour = () => decreaseTime('hours')
+export const decreaseDay = () => decreaseTime('days')
+export const decreaseWeek = () => decreaseTime('weeks')
+export const decreaseMonth = () => decreaseTime('months')

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { fetchLiveCurrencies, fetchTimeseries } from './api/price'
-import type { CurrencyResponse } from './api/responses/CurrencyResponse'
+import type { AvailableCurrencies, CurrencyResponse } from './api/responses/CurrencyResponse'
 import CurrencyDropdown from './components/molecules/CurrencyDropdown.vue'
 import ForexChart from './components/organisms/ForexChart.vue'
 import {
@@ -14,24 +14,16 @@ import {
 } from './utils/dateFormat'
 import type { TimeseriesResponse } from './api/responses/TimeseriesResponse'
 
-// const { data: liveCurrencies } = fetchLiveCurrencies()
+const availableCurrencies = ref<AvailableCurrencies>({})
 const timeSeriesResponse = ref<TimeseriesResponse>()
-
-const options: CurrencyResponse = {
-  available_currencies: {
-    ARS: 'Argentine Peso',
-    AUD: 'Australian Dollar',
-    BHD: 'Bahraini Dinar',
-    BRL: 'Brazilian Real',
-    CAD: 'Canadian Dollar',
-    CHF: 'Swiss Franc',
-    CLP: 'Chilean Peso',
-    CNY: 'Chinese Yuan',
-    COP: 'Colombian Peso',
-  },
-  endpoint: 'live_currencies',
-}
-
+// const {
+//   availableCurrencies,
+//   timeSeriesResponse,
+//   firstSelectedSymbol,
+//   secondSelectedSymbol,
+//   startDate,
+//   fetchTimeseriesData,
+// } = useForex()
 const firstSelectedSymbol = ref('ARS')
 const secondSelectedSymbol = ref('ARS')
 const startDate = ref(formatDate(new Date()))
@@ -53,6 +45,20 @@ const timeSpans: { label: string; decreaseTime: () => string }[] = [
 ]
 
 const selectedTimeSpan = ref(timeSpans[0])
+
+const fetchCurrencies = async () => {
+  try {
+    const data: CurrencyResponse | undefined = await fetchLiveCurrencies()
+    if (data && data.available_currencies) {
+      availableCurrencies.value = data.available_currencies
+      const currencyKeys = Object.keys(data.available_currencies)
+      firstSelectedSymbol.value = currencyKeys[0] || ''
+      secondSelectedSymbol.value = currencyKeys[1] || ''
+    }
+  } catch (error) {
+    console.error('Error fetching currencies:', error)
+  }
+}
 
 const fetchTimeseriesData = async () => {
   const start = selectedTimeSpan.value.decreaseTime()
@@ -79,7 +85,10 @@ watch([firstSelectedSymbol, secondSelectedSymbol, selectedTimeSpan], () => {
   fetchTimeseriesData()
 })
 
-fetchTimeseriesData()
+onMounted(async () => {
+  await fetchCurrencies()
+  fetchTimeseriesData()
+})
 </script>
 
 <template>
@@ -90,12 +99,14 @@ fetchTimeseriesData()
       <div class="flex flex-col self-center gap-4">
         <!-- <CurrencyDropdown :dropdownOptions="options.available_currencies" /> -->
         <CurrencyDropdown
-          :dropdownOptions="options.available_currencies"
+          v-if="availableCurrencies"
+          :dropdownOptions="availableCurrencies"
           :selectedCurrency="firstSelectedSymbol"
           @update:selectedCurrency="updateFirstSelectedCurrency"
         />
         <CurrencyDropdown
-          :dropdownOptions="options.available_currencies"
+          v-if="availableCurrencies"
+          :dropdownOptions="availableCurrencies"
           :selectedCurrency="secondSelectedSymbol"
           @update:selectedCurrency="updateSecondSelectedCurrency"
         />
