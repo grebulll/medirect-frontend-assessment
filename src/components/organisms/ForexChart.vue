@@ -54,6 +54,9 @@ const options = {
       grid: {
         display: false,
       },
+      border: {
+        display: false,
+      },
     },
     y: {
       title: {
@@ -66,6 +69,9 @@ const options = {
       grid: {
         display: false,
       },
+      border: {
+        display: false,
+      },
     },
   },
 }
@@ -74,7 +80,7 @@ const options = {
 <style scoped>
 .chartContainer {
   position: relative;
-  width: 100%;
+  width: 530px;
   height: 300px;
 }
 </style>
