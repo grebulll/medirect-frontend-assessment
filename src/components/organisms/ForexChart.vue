@@ -1,5 +1,5 @@
 <template>
-  <div class="chartContainer">
+  <div class="chartContainer md:w-[698px]">
     <Line :data="data" :options="options" />
   </div>
 </template>
@@ -12,21 +12,25 @@ import {
   PointElement,
   LineElement,
   Title,
-  Tooltip,
-  Legend,
+  Filler,
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+const props = defineProps<{
+  closePrices: number[]
+  labels: string[]
+}>()
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Filler)
 
 const data = {
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  labels: props.labels,
   datasets: [
     {
       label: 'Data One',
-      backgroundColor: 'rgba(171, 210, 115, 0.9)',
+      backgroundColor: '#f3f9eb',
       borderColor: '#abd273',
-      data: [40, 39, 10, 40, 39, 80, 40],
+      data: props.closePrices,
       pointRadius: 0,
       fill: true,
     },
@@ -39,20 +43,22 @@ const options = {
   plugins: {
     legend: {
       display: false,
-      position: 'top',
     },
+  },
+  layout: {
+    padding: 0,
   },
   scales: {
     x: {
       title: {
         display: false,
-        text: 'Months',
       },
       ticks: {
         display: false,
       },
       grid: {
         display: false,
+        drawTicks: false,
       },
       border: {
         display: false,
@@ -61,13 +67,13 @@ const options = {
     y: {
       title: {
         display: false,
-        text: 'Values',
       },
       ticks: {
         display: false,
       },
       grid: {
         display: false,
+        drawTicks: false,
       },
       border: {
         display: false,
@@ -79,8 +85,6 @@ const options = {
 
 <style scoped>
 .chartContainer {
-  position: relative;
-  width: 530px;
   height: 300px;
 }
 </style>
