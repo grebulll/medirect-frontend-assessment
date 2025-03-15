@@ -1,6 +1,6 @@
 <template>
   <div class="chartContainer md:w-[698px]">
-    <Line :data="data" :options="options" />
+    <Line :data="chartData" :options="options" />
   </div>
 </template>
 
@@ -14,6 +14,7 @@ import {
   Title,
   Filler,
 } from 'chart.js'
+import { computed } from 'vue'
 import { Line } from 'vue-chartjs'
 
 const props = defineProps<{
@@ -23,7 +24,7 @@ const props = defineProps<{
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Filler)
 
-const data = {
+const chartData = computed(() => ({
   labels: props.labels,
   datasets: [
     {
@@ -35,7 +36,7 @@ const data = {
       fill: true,
     },
   ],
-}
+}))
 
 const options = {
   responsive: true,

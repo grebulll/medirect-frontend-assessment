@@ -12,70 +12,10 @@ import {
   decreaseMonth,
   formatDate,
 } from './utils/dateFormat'
+import type { TimeseriesResponse } from './api/responses/TimeseriesResponse'
 
 // const { data: liveCurrencies } = fetchLiveCurrencies()
-// const { data: timeSeries } = fetchTimeseries(startDate.value, formatDate(new Date()))
-
-const timeSeriesResponse = ref({
-  base_currency: 'EUR',
-  end_date: '2019-10-10',
-  endpoint: 'timeseries',
-  quote_currency: 'USD',
-  quotes: [
-    {
-      close: 1.09331,
-      date: '2019-10-01',
-      high: 1.09437,
-      low: 1.0879,
-      open: 1.08991,
-    },
-    {
-      close: 1.09591,
-      date: '2019-10-02',
-      high: 1.09638,
-      low: 1.09039,
-      open: 1.09331,
-    },
-    {
-      close: 1.10055,
-      date: '2019-10-10',
-      high: 1.10341,
-      low: 1.09702,
-      open: 1.09711,
-    },
-    {
-      close: 1.10055,
-      date: '2019-10-10',
-      high: 1.10341,
-      low: 1.09702,
-      open: 1.09711,
-    },
-    {
-      close: 1.10055,
-      date: '2019-10-10',
-      high: 1.10341,
-      low: 1.09702,
-      open: 1.09711,
-    },
-    {
-      close: 1.10055,
-      date: '2019-10-10',
-      high: 1.10341,
-      low: 1.09702,
-      open: 1.09711,
-    },
-  ],
-  request_time: 'Thu, 31 Oct 2019 15:34:09 GMT',
-  start_date: '2019-10-01',
-})
-
-const closePrices = computed(() => {
-  return timeSeriesResponse.value?.quotes?.map((element) => element.close)
-})
-
-const setLabels = computed(() => {
-  return timeSeriesResponse.value?.quotes?.map((element) => element.date)
-})
+const timeSeriesResponse = ref<TimeseriesResponse>()
 
 const options: CurrencyResponse = {
   available_currencies: {
@@ -119,24 +59,24 @@ const fetchTimeseriesData = async () => {
   startDate.value = start
   const end = formatDate(new Date())
 
-  // timeSeriesResponse.value = await fetchTimeseries(
-  //   firstSelectedSymbol.value,
-  //   secondSelectedSymbol.value,
-  //   startDate.value,
-  //   end,
-  // )
+  timeSeriesResponse.value = await fetchTimeseries(
+    firstSelectedSymbol.value,
+    secondSelectedSymbol.value,
+    startDate.value,
+    end,
+  )
 }
 
-watch(selectedTimeSpan, () => {
-  const start = selectedTimeSpan.value.decreaseTime()
-  startDate.value = start
+const closePrices = computed(() => {
+  return timeSeriesResponse.value?.quotes?.map((element) => element.close) || []
 })
 
-watch([firstSelectedSymbol, secondSelectedSymbol, selectedTimeSpan], () => fetchTimeseriesData())
+const setLabels = computed(() => {
+  return timeSeriesResponse.value?.quotes?.map((element) => element.date) || []
+})
 
-watch(selectedTimeSpan, (newTimeSpan) => {
-  const start = newTimeSpan.decreaseTime()
-  startDate.value = start
+watch([firstSelectedSymbol, secondSelectedSymbol, selectedTimeSpan], () => {
+  fetchTimeseriesData()
 })
 
 fetchTimeseriesData()
@@ -171,8 +111,11 @@ fetchTimeseriesData()
           </div>
           <h1 class="text-2xl">{{ firstSelectedSymbol }} / {{ secondSelectedSymbol }}</h1>
         </div>
-        <ForexChart :closePrices="closePrices" :labels="setLabels" />
-
+        <ForexChart
+          v-if="closePrices && setLabels"
+          :closePrices="closePrices"
+          :labels="setLabels"
+        />
         <div class="flex gap-10 self-center pb-7">
           <button
             class="cursor-pointer px-3 py-1 rounded-md hover:bg-gray-300"
