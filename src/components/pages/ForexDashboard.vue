@@ -64,7 +64,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div class="flex flex-col shadow-xl rounded-2xl">
+      <div class="flex flex-col shadow-xl rounded-2xl md:pt-0 pt-6">
         {{ selectedExchange }}
         <ForexInfoHeader
           v-if="firstSelectedSymbol && secondSelectedSymbol && timeSeriesResponse"
