@@ -67,14 +67,6 @@ export function useForexData() {
     }
   }
 
-  watch(
-    [firstSelectedSymbol, secondSelectedSymbol],
-    () => {
-      connectWebSocket()
-    },
-    { immediate: true },
-  )
-
   const timeSpans: TimeSpan[] = [
     { label: '15M', decreaseTime: decreaseFifteenMinutes },
     { label: '1H', decreaseTime: decreaseHour },
@@ -85,8 +77,6 @@ export function useForexData() {
   const selectedTimeSpan = ref(timeSpans[0])
 
   const currentPrice = computed(() => {
-    console.log('timeSeriesResponse.value?.quotes:', timeSeriesResponse.value?.quotes)
-
     return timeSeriesResponse.value?.quotes?.length
       ? timeSeriesResponse.value.quotes[timeSeriesResponse.value.quotes.length - 1].close
       : 0
@@ -148,6 +138,14 @@ export function useForexData() {
       loading.value = false
     }
   }
+
+  watch(
+    [firstSelectedSymbol, secondSelectedSymbol],
+    () => {
+      connectWebSocket()
+    },
+    { immediate: true },
+  )
 
   onUnmounted(() => {
     if (socket) {
