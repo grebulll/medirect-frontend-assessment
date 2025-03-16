@@ -6,7 +6,7 @@ import type { TimeseriesResponse } from '@/api/responses/TimeseriesResponse'
 const props = defineProps<{
   firstCurrency: string
   secondCurrency: string
-  currentPrice?: number
+  currentPrice: number | null
   timeSeriesResponse: TimeseriesResponse
 }>()
 

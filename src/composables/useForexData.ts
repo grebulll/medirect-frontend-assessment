@@ -10,48 +10,63 @@ import {
   decreaseWeek,
   formatDate,
 } from '@/utils/dateFormat'
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 
-export function useForexDate() {
+const API_KEY = 'wsBdRoz1Dm--_eKSV87A'
+const SOCKET_URL = 'wss://marketdata.tradermade.com/feedadv'
+
+export function useForexData() {
   const loading = ref(false)
   const availableCurrencies = ref<AvailableCurrencies>({})
   const timeSeriesResponse = ref<TimeseriesResponse | null>()
   const firstSelectedSymbol = ref()
   const secondSelectedSymbol = ref()
   const startDate = ref(formatDate(new Date()))
+  let socket: WebSocket
+  const currentPriceFromWebSocket = ref<number | null>(null)
+  const lastKnownPrice = ref<number | null>(null)
 
-  // mock data
-  // const timeSeriesResponse = ref({
-  //   base_currency: 'EUR',
-  //   end_date: '2019-10-10',
-  //   endpoint: 'timeseries',
-  //   quote_currency: 'USD',
-  //   quotes: [
-  //     {
-  //       close: 1.09331,
-  //       date: '2019-10-01',
-  //       high: 1.09437,
-  //       low: 1.0879,
-  //       open: 1.08991,
-  //     },
-  //     {
-  //       close: 1.09591,
-  //       date: '2019-10-02',
-  //       high: 1.09638,
-  //       low: 1.09039,
-  //       open: 1.09331,
-  //     },
-  //     {
-  //       close: 1.10055,
-  //       date: '2019-10-10',
-  //       high: 1.10341,
-  //       low: 1.09702,
-  //       open: 1.09711,
-  //     },
-  //   ],
-  //   request_time: 'Thu, 31 Oct 2019 15:34:09 GMT',
-  //   start_date: '2019-10-01',
-  // })
+  const connectWebSocket = () => {
+    if (!firstSelectedSymbol.value || !secondSelectedSymbol.value) return
+
+    if (socket) {
+      socket.close()
+    }
+
+    socket = new WebSocket(SOCKET_URL)
+
+    socket.onopen = () => {
+      const message = JSON.stringify({
+        userKey: API_KEY,
+        symbol: `${firstSelectedSymbol.value}${secondSelectedSymbol.value}`,
+      })
+      socket.send(message)
+    }
+
+    socket.onmessage = (event) => {
+      if (event.data.startsWith('{')) {
+        try {
+          const data = JSON.parse(event.data)
+          if (data.bid) {
+            currentPriceFromWebSocket.value = data.bid
+            lastKnownPrice.value = data.bid
+          }
+        } catch (error) {
+          console.error('JSON Parse Error:', error, 'Received:', event.data)
+        }
+      } else {
+        console.warn('Non-JSON Message Received:', event.data)
+      }
+    }
+  }
+
+  watch(
+    [firstSelectedSymbol, secondSelectedSymbol],
+    () => {
+      connectWebSocket()
+    },
+    { immediate: true },
+  )
 
   const timeSpans: TimeSpan[] = [
     { label: '15M', decreaseTime: decreaseFifteenMinutes },
@@ -86,60 +101,6 @@ export function useForexDate() {
     loading.value = true
     try {
       const data: CurrencyResponse | null = await fetchLiveCurrencies()
-      // mock data
-      // const data: CurrencyResponse | null = {
-      //   available_currencies: {
-      //     ADA: 'Cardano',
-      //     ATOM: 'Atom',
-      //     AVAX: 'Avalanche',
-      //     AXS: 'Axis infinity',
-      //     BCH: 'Bitcoin Cash',
-      //     BNB: 'Binance Coin',
-      //     BTC: 'Bitcoin',
-      //     BTG: 'Bitcoin Gold',
-      //     BUSD: 'Binance USD',
-      //     DAI: 'DAI',
-      //     DASH: 'Dashcoin',
-      //     DOGE: 'DogeCoin',
-      //     DOT: 'Polkadot',
-      //     EGLD: 'Elrond Egold',
-      //     ENJ: 'ENJ',
-      //     EOS: 'EOS Platform',
-      //     ETC: 'Ethereum Classic',
-      //     ETH: 'Ethereum',
-      //     FIL: 'Filecoin',
-      //     FLOW: 'Flow',
-      //     FTM: 'Fantom USD',
-      //     FTT: 'FTX Token',
-      //     GALA: 'Gala',
-      //     HBAR: 'Hbar',
-      //     HNT: 'Helium',
-      //     ICP: 'Internet Computer Price ',
-      //     LINK: 'Chainlink',
-      //     LRC: 'Loopring',
-      //     LTC: 'Litecoin',
-      //     LUNA: 'Luna',
-      //     MANA: 'Decentraland',
-      //     MATIC: 'Matic',
-      //     NEAR: 'Near',
-      //     NEO: 'NEO',
-      //     ROSE: 'Rose',
-      //     SAND: 'Sandbox',
-      //     SHIB: 'Shiba inu',
-      //     SOL: 'Solana',
-      //     THETA: 'Theta',
-      //     TRX: 'Tron',
-      //     UNI: 'Uniswap',
-      //     USDT: 'Tether',
-      //     UST: 'Terra USD',
-      //     VET: 'Vechain',
-      //     XLM: 'Stellar',
-      //     XMR: 'Monero',
-      //     XRP: 'Ripple',
-      //     XTZ: 'Tezos',
-      //   },
-      //   endpoint: 'live_crypto',
-      // }
 
       if (data?.available_currencies) {
         availableCurrencies.value = data.available_currencies
@@ -175,6 +136,12 @@ export function useForexDate() {
       loading.value = false
     }
   }
+
+  onUnmounted(() => {
+    if (socket) {
+      socket.close()
+    }
+  })
 
   return {
     availableCurrencies,
