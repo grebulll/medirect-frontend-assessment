@@ -30,13 +30,13 @@ const priceSymbol = computed(() => getCurrencySymbol(props.timeSeriesResponse?.q
       <div :class="`currency-flag currency-flag-${firstCurrency.toLowerCase()}`" />
       <div :class="`currency-flag currency-flag-${secondCurrency.toLowerCase()}`" />
     </div>
-    <div class="flex flex-row gap-3 justify-between">
+    <div class="flex md:flex-row flex-col gap-3 justify-between">
       <h1 class="text-2xl font-bold">{{ firstCurrency }} / {{ secondCurrency }}</h1>
       <h1 class="text-2xl font-bold">{{ priceSymbol }} {{ currentPrice }}</h1>
     </div>
     <div class="flex flex-row justify-end">
-      <h1 class="text-lg text-green-500 font-light">
-        {{ getPriceDifference }} ({{ getPercentageChange }})
+      <h1 class="text-lg text-green-500 font-light break-words whitespace-normal">
+        {{ getPriceDifference.toFixed(6) }} ({{ getPercentageChange }})
       </h1>
     </div>
   </div>

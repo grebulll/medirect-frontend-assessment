@@ -20,6 +20,39 @@ export function useForexDate() {
   const secondSelectedSymbol = ref()
   const startDate = ref(formatDate(new Date()))
 
+  // mock data
+  // const timeSeriesResponse = ref({
+  //   base_currency: 'EUR',
+  //   end_date: '2019-10-10',
+  //   endpoint: 'timeseries',
+  //   quote_currency: 'USD',
+  //   quotes: [
+  //     {
+  //       close: 1.09331,
+  //       date: '2019-10-01',
+  //       high: 1.09437,
+  //       low: 1.0879,
+  //       open: 1.08991,
+  //     },
+  //     {
+  //       close: 1.09591,
+  //       date: '2019-10-02',
+  //       high: 1.09638,
+  //       low: 1.09039,
+  //       open: 1.09331,
+  //     },
+  //     {
+  //       close: 1.10055,
+  //       date: '2019-10-10',
+  //       high: 1.10341,
+  //       low: 1.09702,
+  //       open: 1.09711,
+  //     },
+  //   ],
+  //   request_time: 'Thu, 31 Oct 2019 15:34:09 GMT',
+  //   start_date: '2019-10-01',
+  // })
+
   const timeSpans: TimeSpan[] = [
     { label: '15M', decreaseTime: decreaseFifteenMinutes },
     { label: '1H', decreaseTime: decreaseHour },
@@ -53,6 +86,61 @@ export function useForexDate() {
     loading.value = true
     try {
       const data: CurrencyResponse | null = await fetchLiveCurrencies()
+      // mock data
+      // const data: CurrencyResponse | null = {
+      //   available_currencies: {
+      //     ADA: 'Cardano',
+      //     ATOM: 'Atom',
+      //     AVAX: 'Avalanche',
+      //     AXS: 'Axis infinity',
+      //     BCH: 'Bitcoin Cash',
+      //     BNB: 'Binance Coin',
+      //     BTC: 'Bitcoin',
+      //     BTG: 'Bitcoin Gold',
+      //     BUSD: 'Binance USD',
+      //     DAI: 'DAI',
+      //     DASH: 'Dashcoin',
+      //     DOGE: 'DogeCoin',
+      //     DOT: 'Polkadot',
+      //     EGLD: 'Elrond Egold',
+      //     ENJ: 'ENJ',
+      //     EOS: 'EOS Platform',
+      //     ETC: 'Ethereum Classic',
+      //     ETH: 'Ethereum',
+      //     FIL: 'Filecoin',
+      //     FLOW: 'Flow',
+      //     FTM: 'Fantom USD',
+      //     FTT: 'FTX Token',
+      //     GALA: 'Gala',
+      //     HBAR: 'Hbar',
+      //     HNT: 'Helium',
+      //     ICP: 'Internet Computer Price ',
+      //     LINK: 'Chainlink',
+      //     LRC: 'Loopring',
+      //     LTC: 'Litecoin',
+      //     LUNA: 'Luna',
+      //     MANA: 'Decentraland',
+      //     MATIC: 'Matic',
+      //     NEAR: 'Near',
+      //     NEO: 'NEO',
+      //     ROSE: 'Rose',
+      //     SAND: 'Sandbox',
+      //     SHIB: 'Shiba inu',
+      //     SOL: 'Solana',
+      //     THETA: 'Theta',
+      //     TRX: 'Tron',
+      //     UNI: 'Uniswap',
+      //     USDT: 'Tether',
+      //     UST: 'Terra USD',
+      //     VET: 'Vechain',
+      //     XLM: 'Stellar',
+      //     XMR: 'Monero',
+      //     XRP: 'Ripple',
+      //     XTZ: 'Tezos',
+      //   },
+      //   endpoint: 'live_crypto',
+      // }
+
       if (data?.available_currencies) {
         availableCurrencies.value = data.available_currencies
         const currencyKeys = Object.keys(data.available_currencies)

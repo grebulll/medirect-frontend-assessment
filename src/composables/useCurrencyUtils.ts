@@ -24,7 +24,7 @@ export function useCurrencyUtils(timeSeriesResponse: Ref<TimeseriesResponse | nu
 
   const getPercentageChange = computed(() => {
     if (!getStartingPrice.value) return '0.00%'
-    const percentage = ((getPriceDifference.value / getStartingPrice.value) * 100).toFixed(2)
+    const percentage = ((getPriceDifference.value / getStartingPrice.value) * 100).toFixed(6)
     return `${percentage}%`
   })
 

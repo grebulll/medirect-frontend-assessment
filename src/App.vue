@@ -68,13 +68,14 @@ onMounted(async () => {
           :loading="loading"
         />
 
-        <div class="flex gap-10 self-center pb-7">
+        <div class="flex flex-wrap md:gap-10 gap-3 justify-center py-7 px-2">
           <TimeSpanButton
             v-for="(timeSpan, index) in timeSpans"
             :key="index"
             :timeSpan="timeSpan"
             :isSelected="timeSpan.label === selectedTimeSpan.label"
             @update="selectedTimeSpan = timeSpan"
+            class="px-4 py-2 rounded-lg shadow-md text-sm md:text-base"
           />
         </div>
       </div>

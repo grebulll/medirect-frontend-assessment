@@ -21,8 +21,8 @@ const onSelect = (event: Event) => {
 </script>
 
 <template>
-  <div class="select-dropdown">
-    <select @change="onSelect" v-model="selectedOption">
+  <div class="w-full">
+    <select class="md:w-auto w-full" @change="onSelect" v-model="selectedOption">
       <option v-for="(name, code) in dropdownOptions" :key="code" :value="code">
         {{ name }}
       </option>
@@ -31,10 +31,6 @@ const onSelect = (event: Event) => {
 </template>
 
 <style scoped>
-.select-dropdown {
-  display: inline-block;
-}
-
 select {
   padding: 10px;
   border: 1px solid #ccc;
