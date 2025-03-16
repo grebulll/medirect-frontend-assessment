@@ -12,7 +12,6 @@ import {
 } from '@/utils/dateFormat'
 import { computed, onUnmounted, ref, watch } from 'vue'
 
-const API_KEY = 'wsBdRoz1Dm--_eKSV87A'
 const SOCKET_URL = 'wss://marketdata.tradermade.com/feedadv'
 
 export function useForexData() {
@@ -44,7 +43,7 @@ export function useForexData() {
 
     socket.onopen = () => {
       const message = JSON.stringify({
-        userKey: API_KEY,
+        userKey: import.meta.env.VITE_SOCKET_API_KEY,
         symbol: `${firstSelectedSymbol.value}${secondSelectedSymbol.value}`,
       })
       socket.send(message)

@@ -1,10 +1,8 @@
 import type { CurrencyResponse } from './responses/CurrencyResponse'
 import type { TimeseriesResponse } from './responses/TimeseriesResponse'
 
-const API_KEY = '4F4OXn1-Z2Pbct2hf26K'
-
 export async function fetchLiveCurrencies() {
-  const url = `https://marketdata.tradermade.com/api/v1/live_currencies_list?api_key=${API_KEY}`
+  const url = `https://marketdata.tradermade.com/api/v1/live_currencies_list?api_key=${import.meta.env.VITE_FOREX_API_KEY}`
 
   try {
     const response = await fetch(url)
@@ -25,7 +23,7 @@ export async function fetchTimeseries(
   start_date: string,
   end_date: string,
 ) {
-  const url = `https://marketdata.tradermade.com/api/v1/timeseries?currency=${firstCurrency}${secondCurrency}&api_key=${API_KEY}&start_date=${start_date}&end_date=${end_date}&format=records`
+  const url = `https://marketdata.tradermade.com/api/v1/timeseries?currency=${firstCurrency}${secondCurrency}&api_key=${import.meta.env.VITE_FOREX_API_KEY}&start_date=${start_date}&end_date=${end_date}&format=records`
 
   try {
     const response = await fetch(url)
