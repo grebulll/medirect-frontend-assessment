@@ -8,15 +8,20 @@ const {
   availableCurrencies,
   firstSelectedSymbol,
   secondSelectedSymbol,
-  startDate,
   timeSpans,
   selectedTimeSpan,
   closePrices,
   setLabels,
+  currentPrice,
   updateFirstSelectedCurrency,
   updateSecondSelectedCurrency,
   fetchCurrencies,
   fetchTimeseriesData,
+  timeSeriesResponse,
+  loading,
+  getPriceDifference,
+  getCurrencySymbol,
+  getPercentageChange,
 } = useForex()
 
 watch([firstSelectedSymbol, secondSelectedSymbol, selectedTimeSpan], () => {
@@ -50,20 +55,32 @@ onMounted(async () => {
         />
       </div>
       <div
-        v-if="firstSelectedSymbol && secondSelectedSymbol"
+        v-if="firstSelectedSymbol && secondSelectedSymbol && timeSeriesResponse"
         class="flex flex-col shadow-xl rounded-2xl"
       >
-        <div class="pl-4 md:pt-0 pt-8">
+        <div class="px-4 md:pt-0 pt-8">
           <div class="flex flex-row gap-3">
             <div :class="`currency-flag currency-flag-${firstSelectedSymbol.toLowerCase()}`" />
             <div :class="`currency-flag currency-flag-${secondSelectedSymbol.toLowerCase()}`" />
           </div>
-          <h1 class="text-2xl">{{ firstSelectedSymbol }} / {{ secondSelectedSymbol }}</h1>
+          <div class="flex flex-row gap-3 justify-between">
+            <h1 class="text-2xl">{{ firstSelectedSymbol }} / {{ secondSelectedSymbol }}</h1>
+            <h1 class="text-2xl">
+              {{ getCurrencySymbol(timeSeriesResponse.quote_currency) }}
+              {{ currentPrice }}
+            </h1>
+          </div>
+          <div class="flex flex-row justify-end">
+            <h1 class="text-lg text-green-500 font-light">
+              {{ getPriceDifference }} {{ getPercentageChange }}
+            </h1>
+          </div>
         </div>
         <ForexChart
           v-if="closePrices && setLabels"
           :closePrices="closePrices"
           :labels="setLabels"
+          :loading="loading"
         />
         <div class="flex gap-10 self-center pb-7">
           <button
@@ -74,7 +91,6 @@ onMounted(async () => {
           >
             <p>{{ timeSpan.label }}</p>
           </button>
-          {{ startDate }}
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import {
 import { computed, ref } from 'vue'
 
 export function useForex() {
+  const loading = ref(false)
   const availableCurrencies = ref<AvailableCurrencies>({})
   const timeSeriesResponse = ref<TimeseriesResponse>()
   const firstSelectedSymbol = ref()
@@ -35,6 +36,13 @@ export function useForex() {
     secondSelectedSymbol.value = currency
   }
 
+  const currentPrice = computed(() => {
+    return (
+      timeSeriesResponse.value?.quotes.length ??
+      timeSeriesResponse.value?.quotes[timeSeriesResponse.value?.quotes.length - 1].close
+    )
+  })
+
   const closePrices = computed(() => {
     return timeSeriesResponse.value?.quotes?.map((element) => element.close) || []
   })
@@ -43,14 +51,38 @@ export function useForex() {
     return timeSeriesResponse.value?.quotes?.map((element) => element.date) || []
   })
 
+  const getCurrencySymbol = (currencyCode: string): string => {
+    const currencyPart = new Intl.NumberFormat('en', { style: 'currency', currency: currencyCode })
+      .formatToParts(1)
+      .find((part) => part.type === 'currency')
+    return currencyPart?.value || currencyCode
+  }
+
+  const getStartingPrice = computed(() => {
+    return timeSeriesResponse.value?.quotes?.[0]?.open ?? 0
+  })
+
+  const getEndingPrice = computed(() => {
+    const quotes = timeSeriesResponse.value?.quotes
+    return quotes?.length ? (quotes[quotes.length - 1]?.close ?? 0) : 0
+  })
+
+  const getPriceDifference = computed(() => {
+    return (getEndingPrice.value ?? 0) - (getStartingPrice.value ?? 0)
+  })
+
+  const getPercentageChange = computed(() => {
+    if (!getStartingPrice.value) return '0.00%'
+    const percentage = ((getPriceDifference.value / getStartingPrice.value) * 100).toFixed(2)
+    return `${percentage}%`
+  })
+
   const fetchCurrencies = async () => {
     try {
       const data: CurrencyResponse | undefined = await fetchLiveCurrencies()
       if (data && data.available_currencies) {
         availableCurrencies.value = data.available_currencies
         const currencyKeys = Object.keys(data.available_currencies)
-        console.log('currencyKeys:', currencyKeys)
-
         firstSelectedSymbol.value = currencyKeys[0] || ''
         secondSelectedSymbol.value = currencyKeys[1] || ''
       }
@@ -63,13 +95,14 @@ export function useForex() {
     const start = selectedTimeSpan.value.decreaseTime()
     startDate.value = start
     const end = formatDate(new Date())
+    loading.value = true
 
     timeSeriesResponse.value = await fetchTimeseries(
       firstSelectedSymbol.value,
       secondSelectedSymbol.value,
       startDate.value,
       end,
-    )
+    ).finally(() => (loading.value = false))
   }
 
   return {
@@ -80,11 +113,18 @@ export function useForex() {
     startDate,
     timeSpans,
     selectedTimeSpan,
+    currentPrice,
     closePrices,
     setLabels,
     updateFirstSelectedCurrency,
     updateSecondSelectedCurrency,
     fetchCurrencies,
     fetchTimeseriesData,
+    loading,
+    getCurrencySymbol,
+    getStartingPrice,
+    getEndingPrice,
+    getPriceDifference,
+    getPercentageChange,
   }
 }
