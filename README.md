@@ -1,39 +1,20 @@
-# medirect-frontend-assessment
+## Installation Instructions
 
-This template should help get you started developing with Vue 3 in Vite.
+Follow these steps to set up the project on your local machine:
 
-## Recommended IDE Setup
+1. **Clone the Repository**
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Open your terminal and run the following command to clone the repository:
 
-## Type Support for `.vue` Imports in TS
+```bash
+git clone https://github.com/grebulll/medirect-frontend-assessment.git
+cd medirect-frontend-assessment
+```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+2. **Run the project**
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 pnpm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-pnpm dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-pnpm build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
+pnpm run dev
+after running the previous command, look for a local link in the terminal output (it will look similar to http://localhost:5173/). Copy that link to access your project in a web browser.
 ```
