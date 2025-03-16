@@ -15,6 +15,7 @@ export async function fetchLiveCurrencies() {
     return data
   } catch (error) {
     console.error('Error fetching currencies:', error)
+    return null
   }
 }
 
@@ -35,5 +36,6 @@ export async function fetchTimeseries(
     return data
   } catch (error) {
     console.error('Error fetching currencies:', error)
+    return null
   }
 }
