@@ -1,5 +1,5 @@
 <template>
-  <div class="chartContainer md:w-[698px]">
+  <div class="md:h-72 h-40 md:w-[698px]">
     <Line :data="chartData" :options="options" />
   </div>
 </template>
@@ -83,9 +83,3 @@ const options = {
   },
 }
 </script>
-
-<style scoped>
-.chartContainer {
-  height: 300px;
-}
-</style>
