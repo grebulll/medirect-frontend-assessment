@@ -3,7 +3,7 @@ import type { AvailableCurrencies } from '@/api/responses/CurrencyResponse'
 import { ref } from 'vue'
 
 const props = defineProps<{
-  dropdownOptions: AvailableCurrencies
+  dropdownOptions: AvailableCurrencies | string[]
   selectedCurrency: string
 }>()
 

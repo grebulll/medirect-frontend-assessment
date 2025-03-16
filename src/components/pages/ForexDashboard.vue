@@ -3,11 +3,14 @@ import { onMounted, watch } from 'vue'
 import CurrencyDropdown from '../molecules/CurrencyDropdown.vue'
 import ForexChart from '../organisms/ForexChart.vue'
 import TimeSpanButton from '../molecules/TimeSpanButton.vue'
-import { useForexData } from '../../composables/useForexData'
+import { useForexData } from '../../utils/composables/useForexData'
 import ForexInfoHeader from '../organisms/ForexInfoHeader.vue'
 
 const {
   availableCurrencies,
+  selectedExchange,
+  updateSelectedExchange,
+  exchangesList,
   firstSelectedSymbol,
   secondSelectedSymbol,
   timeSpans,
@@ -42,6 +45,12 @@ onMounted(async () => {
     <div class="flex md:flex-row flex-col pt-4 gap-x-6">
       <div class="flex flex-col self-center gap-4">
         <CurrencyDropdown
+          v-if="exchangesList"
+          :dropdownOptions="exchangesList"
+          :selectedCurrency="selectedExchange"
+          @update:selectedCurrency="updateSelectedExchange"
+        />
+        <CurrencyDropdown
           v-if="firstSelectedSymbol"
           :dropdownOptions="availableCurrencies"
           :selectedCurrency="firstSelectedSymbol"
@@ -56,6 +65,7 @@ onMounted(async () => {
       </div>
 
       <div class="flex flex-col shadow-xl rounded-2xl">
+        {{ selectedExchange }}
         <ForexInfoHeader
           v-if="firstSelectedSymbol && secondSelectedSymbol && timeSeriesResponse"
           :firstCurrency="firstSelectedSymbol"
@@ -63,8 +73,6 @@ onMounted(async () => {
           :currentPrice="currentPrice"
           :timeSeriesResponse="timeSeriesResponse"
         />
-
-        <p v-if="currentPrice">Live Price: {{ currentPrice }}</p>
 
         <ForexChart
           v-if="closePrices && setLabels"

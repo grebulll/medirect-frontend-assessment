@@ -17,6 +17,13 @@ const SOCKET_URL = 'wss://marketdata.tradermade.com/feedadv'
 
 export function useForexData() {
   const loading = ref(false)
+  const selectedExchange = ref('tradermade')
+  const exchangesList = ref({
+    tradermade: 'Tradermade',
+    fxcm: 'FXCM',
+    oanda: 'OANDA',
+    lmax: 'LMAX',
+  })
   const availableCurrencies = ref<AvailableCurrencies>({})
   const timeSeriesResponse = ref<TimeseriesResponse | null>()
   const firstSelectedSymbol = ref()
@@ -78,10 +85,11 @@ export function useForexData() {
   const selectedTimeSpan = ref(timeSpans[0])
 
   const currentPrice = computed(() => {
-    return (
-      timeSeriesResponse.value?.quotes.length ??
-      timeSeriesResponse.value?.quotes[timeSeriesResponse.value?.quotes.length - 1].close
-    )
+    console.log('timeSeriesResponse.value?.quotes:', timeSeriesResponse.value?.quotes)
+
+    return timeSeriesResponse.value?.quotes?.length
+      ? timeSeriesResponse.value.quotes[timeSeriesResponse.value.quotes.length - 1].close
+      : 0
   })
 
   const closePrices = computed(() => {
@@ -91,6 +99,10 @@ export function useForexData() {
   const setLabels = computed(() => {
     return timeSeriesResponse.value?.quotes?.map((quote) => quote.date) || []
   })
+
+  const updateSelectedExchange = (exchange: string) => {
+    selectedExchange.value = exchange
+  }
 
   const updateSelectedCurrency = (currency: string, type: 'first' | 'second') => {
     if (type === 'first') firstSelectedSymbol.value = currency
@@ -145,6 +157,9 @@ export function useForexData() {
 
   return {
     availableCurrencies,
+    updateSelectedExchange,
+    selectedExchange,
+    exchangesList,
     timeSeriesResponse,
     firstSelectedSymbol,
     secondSelectedSymbol,

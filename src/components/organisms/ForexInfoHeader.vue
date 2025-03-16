@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useCurrencyUtils } from '@/composables/useCurrencyUtils'
+import { useCurrencyUtils } from '@/utils/composables/useCurrencyUtils'
 import type { TimeseriesResponse } from '@/api/responses/TimeseriesResponse'
 
 const props = defineProps<{
   firstCurrency: string
   secondCurrency: string
-  currentPrice: number | null
+  currentPrice?: number
   timeSeriesResponse: TimeseriesResponse
 }>()
 
